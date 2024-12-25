@@ -373,7 +373,7 @@ public class Program
         return answer;
     }
 
-
+    delegate void ChangeColumnDelegate(ref int[,] matrix, int columnIndex);
     public void RemoveColumn(ref int[,] matrix, int columnIndex)
     {
         int[,] arr = new int[matrix.GetLength(0),matrix.GetLength(1) - 1];
@@ -421,11 +421,12 @@ public class Program
             }
         }
 
-        if (index1 != -1) RemoveColumn(ref matrix, index1);
+        ChangeColumnDelegate removeColumn = RemoveColumn;
+        if (index1 != -1) removeColumn(ref matrix, index1);
         PrintArr(matrix);
         if (index1 != index2 && index2 != -1)
         {
-            RemoveColumn(ref matrix, index1 < index2 ? index2 - 1 : index2);
+            removeColumn(ref matrix, index1 < index2 ? index2 - 1 : index2);
             PrintArr(matrix);   
         }
 
@@ -644,6 +645,7 @@ public class Program
 
     public void RemoveRemoveColumn(ref int[,] matrix)
     {
+        ChangeColumnDelegate removeColumn = RemoveColumn;
         for (int j = 0; j < matrix.GetLength(1); j++)
         {
             bool isTrue = false;
@@ -654,7 +656,7 @@ public class Program
 
             if (!isTrue)
             {
-                RemoveColumn(ref matrix, j);
+                removeColumn(ref matrix, j);
                 RemoveRemoveColumn(ref matrix);
             }
         }
@@ -681,6 +683,7 @@ public class Program
         // end
     }
 
+    delegate int ChangeRowDelegate(int[,] matrix, int rowIndex);
     public int GetNegativeCountPerRow(int[,] matrix, int rowIndex)
     { 
         int count = 0;
@@ -715,9 +718,10 @@ public class Program
 
         // code here
         rows = new int[matrix.GetLength(0)];
+        ChangeRowDelegate changeRowDelegate = GetNegativeCountPerRow;
         for (int i = 0; i < matrix.GetLength(0); i++)
         {
-            rows[i] = GetNegativeCountPerRow(matrix, i);
+            rows[i] = changeRowDelegate(matrix, i);
         }        
         cols = GetMaxNegativePerColumn(matrix);
 
@@ -831,30 +835,94 @@ public class Program
         // end
     }
 
+    delegate int FindSequenceDelegate(int[] array, int A, int B);
+    public int FindSequence(int[] array, int A, int B)
+    {
+        bool isUp = true;
+        bool isDown = true;
+
+        for (int i = A; i < B; i++)
+        {
+            if (array[i] < array[i + 1]) isDown = false;
+            else if (array[i] > array[i + 1]) isUp = false;
+        }
+
+        if (isUp) return 1;
+        if (isDown) return -1;
+        return 0;
+    }
+    
     public void Task_2_28a(int[] first, int[] second, ref int answerFirst, ref int answerSecond)
     {
         // code here
-
-        // create and use FindSequence(array, A, B); // 1 - increasing, 0 - no sequence,  -1 - decreasing
-
+        FindSequenceDelegate findSequenceDelegate = FindSequence;
+        answerFirst = findSequenceDelegate(first, 0, first.Length - 1);
+        answerSecond = findSequenceDelegate(second, 0, second.Length - 1);
+        
         // end
     }
 
+    public void FindIntervals(int[] array, ref int[,] answer)
+    {
+        FindSequenceDelegate findSequenceDelegate = FindSequence;
+
+        int fooCount = 0;
+        for (int i = 0; i < array.Length; i++)
+        {
+            for (int j = i + 1; j < array.Length; j++)
+            {
+                if (findSequenceDelegate(array, i, j) != 0) fooCount++;
+            }
+        }
+        answer = new int[fooCount, 2];
+        int index = 0;
+        for (int i = 0; i < array.Length; i++)
+        {
+            for (int j = i + 1; j < array.Length; j++)
+            {
+                if (findSequenceDelegate(array, i, j) != 0)
+                {
+                    answer[index, 0] = i;
+                    answer[index, 1] = j;
+                    index++;
+                }
+            }
+        }
+    }
     public void Task_2_28b(int[] first, int[] second, ref int[,] answerFirst, ref int[,] answerSecond)
     {
         // code here
-
-        // use FindSequence(array, A, B); from Task_2_28a or entirely Task_2_28a
+        FindIntervals(first, ref answerFirst);
+        FindIntervals(second, ref answerSecond);
 
         // end
     }
 
+    public void findMaxInterval(int[] array, ref int[] answer)
+    {
+        FindSequenceDelegate findSequenceDelegate = FindSequence;
+
+        int start = 0;
+        int finish = 0;
+        for (int i = 0; i < array.Length; i++)
+        {
+            for (int j = i + 1; j < array.Length; j++)
+            {
+                if (finish - start < j - i && findSequenceDelegate(array, i, j) != 0)
+                {
+                    start = i;
+                    finish = j;
+                }
+            }
+        }
+        
+        answer = new int[]{start, finish};
+    }
     public void Task_2_28c(int[] first, int[] second, ref int[] answerFirst, ref int[] answerSecond)
     {
         // code here
-
-        // use FindSequence(array, A, B); from Task_2_28a or entirely Task_2_28a or Task_2_28b
-
+        findMaxInterval(first, ref answerFirst);
+        findMaxInterval(second, ref answerSecond);
         // end
     }
     #endregion
