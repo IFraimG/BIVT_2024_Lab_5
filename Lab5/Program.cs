@@ -361,11 +361,8 @@ public class Program
         return array;
     }
 
-    public void Task_2_8(int[] A, int[] B)
+    public void SortSortArrayPart(int[] A)
     {
-        // code here
-
-        // create and use SortArrayPart(array, startIndex);
         int fooMax = A[0];
         int fooIndex = 0;
         for (int i = 0; i < A.GetLength(0); i++)
@@ -379,19 +376,26 @@ public class Program
 
         A = SortArrayPart(A, fooIndex + 1);
         PrintPrintArr(A);
-        
-        int fooMax2 = B[0];
-        int fooIndex2 = 0;
-        for (int i = 0; i < B.GetLength(0); i++)
-        {
-            if (B[i] > fooMax2)
-            {
-                fooMax2 = B[i];
-                fooIndex2 = i;
-            }
-        }
+    }
+    public void Task_2_8(int[] A, int[] B)
+    {
+        // code here
 
-        B = SortArrayPart(B, fooIndex2 + 1);
+        // create and use SortArrayPart(array, startIndex);
+        SortSortArrayPart(A);
+        SortSortArrayPart(B);
+        // int fooMax2 = B[0];
+        // int fooIndex2 = 0;
+        // for (int i = 0; i < B.GetLength(0); i++)
+        // {
+        //     if (B[i] > fooMax2)
+        //     {
+        //         fooMax2 = B[i];
+        //         fooIndex2 = i;
+        //     }
+        // }
+        //
+        // B = SortArrayPart(B, fooIndex2 + 1);
 
         // end
     }
@@ -475,42 +479,13 @@ public class Program
     public void Task_2_10(ref int[,] matrix)
     {
         // code here
-        int maxFoo1 = Int32.MinValue;
-        int index1 = -1;
-
-        int minFoo2 = Int32.MaxValue;
-        int index2 = -1;
-
-        for (int i = 0; i < matrix.GetLength(0); i++)
-        {
-            for (int j = 0; j < matrix.GetLength(1); j++)
-            {
-                if (i >= j)
-                {
-                    if (matrix[i, j] > maxFoo1)
-                    {
-                        maxFoo1 = matrix[i, j];
-                        index1 = j;
-                    }
-                }
-                else
-                {
-                    if (matrix[i, j] < minFoo2)
-                    {
-                        minFoo2 = matrix[i, j];
-                        index2 = j;
-                    }
-                }
-            }
-        }
-
-        ChangeColumnDelegate removeColumn = RemoveColumn;
-        if (index1 != -1) removeColumn(ref matrix, index1);
-        PrintArr(matrix);
+        int index1 = FindMaxBelowDiagonalIndex(matrix);
+        int index2 = FindMinAboveDiagonalIndex(matrix);
+        if (index1 != -1) RemoveColumn(ref matrix, index1);
+        
         if (index1 != index2 && index2 != -1)
         {
-            removeColumn(ref matrix, index1 < index2 ? index2 - 1 : index2);
-            PrintArr(matrix);   
+            RemoveColumn(ref matrix, index1 < index2 ? index2 - 1 : index2);
         }
 
         // end
